@@ -98,8 +98,8 @@ tests/
 ### 📦 Clone & Install Dependencies
 
 ```bash
-git clone https://github.com/YoussefIbraheem/softxpert-app.git
-cd softxpert-app
+git clone https://github.com/YoussefIbraheem/ideal_laravel_app.git
+cd ideal_laravel_app
 composer install
 ```
 
@@ -154,7 +154,7 @@ vendor/bin/pest --coverage
 
 ## 📮 Postman Documentation
 
-🧪 Postman collection: [`SoftXpert.postman_collection.json`](SoftXpert.postman_collection.json)
+🧪 Postman collection: [`ideal_project.postman_collection.json`](ideal_project.postman_collection.json)
 
 You can import it into Postman to quickly test all API endpoints.
 
