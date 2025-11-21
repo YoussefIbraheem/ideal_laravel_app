@@ -40,7 +40,9 @@ class ListTasks extends Service
         }
 
         if ($assignee_id) {
-            $query->where('assignee_id', $assignee_id);
+            $query->whereHas('assignees', function ($q) use ($assignee_id) {
+                $q->where('user_id', $assignee_id);
+            });
         }
 
         if ($due_date_from) {

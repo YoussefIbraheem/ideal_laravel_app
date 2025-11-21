@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Task;
 use App\Enums\TaskStatus;
+use Illuminate\Validation\Rule;
 use App\Rules\OnlyManagerCanCancelTask;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class ChangeTaskStatusRequest extends FormRequest
 {
@@ -16,7 +17,6 @@ class ChangeTaskStatusRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
