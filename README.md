@@ -1,4 +1,4 @@
-# 🧩 SoftXpert Task Management API
+# 🧩 Task Management API
 
 A robust RESTful backend API for task management built with **Laravel** and tested using **PestPHP**. It supports role-based access control (Admin, Manager, User), task dependencies, status control workflows, and dynamic permission logic.
 
@@ -6,7 +6,7 @@ A robust RESTful backend API for task management built with **Laravel** and test
 
 ## 📄 Table of Contents
 
-- [🧩 SoftXpert Task Management API](#-softxpert-task-management-api)
+- [🧩 Task Management API](#-task-management-api)
   - [📄 Table of Contents](#-table-of-contents)
   - [📚 Features](#-features)
   - [📊 ER Diagram](#-er-diagram)
@@ -98,8 +98,8 @@ tests/
 ### 📦 Clone & Install Dependencies
 
 ```bash
-git clone https://github.com/YoussefIbraheem/softxpert-app.git
-cd softxpert-app
+git clone https://github.com/YoussefIbraheem/ideal_laravel_app.git
+cd ideal_laravel_app
 composer install
 ```
 
@@ -154,7 +154,7 @@ vendor/bin/pest --coverage
 
 ## 📮 Postman Documentation
 
-🧪 Postman collection: [`SoftXpert.postman_collection.json`](SoftXpert.postman_collection.json)
+🧪 Postman collection: [`ideal_project.postman_collection.json`](ideal_project.postman_collection.json)
 
 You can import it into Postman to quickly test all API endpoints.
 
@@ -226,11 +226,11 @@ php artisan scribe:generate
 ## 👨‍👩‍👧‍👦 Roles & Permissions
 
 - **Admin**
-  - Full access including delete, cancel, and role changes.
+  - Full access, including delete, cancel, and role changes.
 - **Manager**
   - Full task control, no deletion or role change.
 - **User**
-  - Can only update status of their assigned tasks (not cancel).
+  - Can only update the status of their assigned tasks (not cancel).
 
 ---
 
