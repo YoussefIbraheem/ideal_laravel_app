@@ -12,6 +12,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property string $role
+ */
+
 class User extends Authenticatable
 {
     /**@use HasFactory<\Database\Factories\UserFactory> */

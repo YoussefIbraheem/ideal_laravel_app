@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Models\User;
+use App\Services\Task\ListTasks;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -68,42 +69,16 @@ class TaskController extends Controller
     public function index(TaskFilterRequest $request): AnonymousResourceCollection
     {
         $user = $request->user();
-
-        $query = Task::query();
-
-        $query = $this->limitUserVisibility($user, $query);
-
-        $perPage = $request->validated('per_page', 10);
-
-        // Apply filters
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('title')) {
-            $query->where('title', 'like', '%'.$request->title.'%');
-        }
-
-        if ($request->filled('owner_id')) {
-            $query->where('owner_id', $request->owner_id);
-        }
-
-        if ($request->filled('assignee_id')) {
-            $query->whereHas('assignees', function ($q) use ($request) {
-                $q->where('user_id', $request->assignee_id);
-            });
-        }
-
-        if ($request->filled('due_date_from')) {
-            $query->whereDate('due_date', '>=', $request->due_date_from);
-        }
-
-        if ($request->filled('due_date_to')) {
-            $query->whereDate('due_date', '<=', $request->due_date_to);
-        }
-
-        // Paginate and return
-        $tasks = $query->paginate($perPage);
+        $tasks = (new ListTasks)->execute(
+            $user,
+            $request->input('status', ''),
+            $request->input('title', ''),
+            $request->input('owner_id', 0),
+            $request->input('assignee_id', 0),
+            $request->input('due_date_from', ''),
+            $request->input('due_date_to', ''),
+            $request->input('per_page', 15),
+        );
 
         return TaskResource::collection($tasks);
     }
