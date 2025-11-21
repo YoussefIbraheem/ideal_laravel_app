@@ -5,10 +5,9 @@ namespace App\Services\Task;
 use App\Models\Task;
 use App\Models\User;
 use App\Enums\UserRole;
-use App\Policies\TaskPolicy;
-use App\Services\Service;
+use App\Services\Task\TaskService;
 
-class ChangeTaskStatus extends Service
+class ChangeTaskStatus extends TaskService
 {
     public function execute(int $id, array $data, User $user)
     {

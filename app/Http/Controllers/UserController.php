@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Enums\UserRole;
-use App\Http\Requests\ChangeUserTypeRequest;
+use Illuminate\Http\Request;
+use App\Services\User\ListUsers;
+use App\Services\User\LoginUser;
+use App\Services\User\CreateUser;
+use App\Services\User\LogoutUser;
+use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
+use App\Services\User\ChangeUserRole;
+use Knuckles\Scribe\Attributes\Group;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\UserResource;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Knuckles\Scribe\Attributes\Authenticated;
-use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Response;
-use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Knuckles\Scribe\Attributes\UrlParam;
+use App\Http\Requests\ChangeUserTypeRequest;
+use Knuckles\Scribe\Attributes\Authenticated;
+use Illuminate\Validation\ValidationException;
+use Knuckles\Scribe\Attributes\ResponseFromApiResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 #[Group(name: 'User Auth')]
 
@@ -39,13 +44,9 @@ class UserController extends Controller
     public function register(RegisterRequest $request)
     {
 
-        $user = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => bcrypt($request['password']),
-        ]);
+        $data = $request->validated();
 
-        $user->assignRole(UserRole::USER);
+        $user =  (new CreateUser)->execute($data);
 
         return new UserResource($user);
     }
@@ -65,19 +66,15 @@ class UserController extends Controller
     #[ResponseFromApiResource(UserResource::class, User::class, additional: ['token' => '5|kBPlXpDNHg491Yg5qTJr2jdTq9PL8L8Z8i0w4jYz22d20fdc'])]
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
+        $data = $request->validated();
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $result = (new LoginUser)->execute($data);
+
 
         return [
-            'data' => new UserResource($user),
-            'access_token' => $token,
+            'data' => new UserResource($result['user']),
+            'access_token' => $result['token'],
         ];
     }
 
@@ -92,11 +89,9 @@ class UserController extends Controller
     #[Response(['message' => 'Logged out successfully'])]
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $result = (new LogoutUser)->execute($request->user());
 
-        return response()->json([
-            'message' => 'Logged out successfully!',
-        ]);
+        return $result ? response()->json(['message' => 'Logged out successfully!']) : response()->json(['message' => 'Logout failed'], 500);
     }
 
     /**
@@ -110,7 +105,7 @@ class UserController extends Controller
     #[ResponseFromApiResource(UserResource::class, User::class, collection: true, factoryStates: ['roles'])]
     public function getUsers(Request $request): AnonymousResourceCollection
     {
-        $data = User::all();
+        $data = (new ListUsers)->execute();
 
         return UserResource::collection($data);
     }
@@ -123,7 +118,7 @@ class UserController extends Controller
      * Access Level: Manager
      */
     #[Authenticated]
-    #[ResponseFromApiResource(UserResource::class, User::class),UrlParam(name: 'id', type: 'int', description: 'searched user\'s id', example: 1)]
+    #[ResponseFromApiResource(UserResource::class, User::class), UrlParam(name: 'id', type: 'int', description: 'searched user\'s id', example: 1)]
     public function getUser(User $user): UserResource
     {
         $data = $user;
@@ -160,21 +155,12 @@ class UserController extends Controller
     #[ResponseFromApiResource(UserResource::class, User::class)]
     public function changeUserRole(ChangeUserTypeRequest $request)
     {
-        $user = User::findOrFail($request->user_id);
+        $data = $request->validated();
+        $user = $request->user();
 
-        if ($request->user_id == $request->user()->id) {
-            abort(403, 'You cannot change your own role.');
-        }
+        $targetUser = (new ChangeUserRole)->execute($user, $data);
 
-        if ($user->hasRole(UserRole::ADMIN)) {
-            abort(403, 'You cannot change an admin\'s role.');
-        }
-
-        $user->syncRoles([]);
-
-        $user->assignRole($request->role_name);
-
-        return new UserResource($user);
+        return new UserResource($targetUser);
     }
 
     /**
@@ -189,11 +175,10 @@ class UserController extends Controller
     #[ResponseFromApiResource(UserResource::class, User::class)]
     public function updateUser(UpdateUserRequest $request): UserResource
     {
-        $user = User::findOrFail($request->user()->id);
+        $data = $request->validated();
 
-        $user->update($request->all());
+        $user = (new \App\Services\User\UpdateUser)->execute($request->user(), $data);
 
         return new UserResource($user);
-
     }
 }

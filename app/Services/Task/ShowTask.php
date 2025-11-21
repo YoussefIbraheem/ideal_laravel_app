@@ -4,9 +4,9 @@ namespace App\Services\Task;
 
 use App\Models\Task;
 use App\Models\User;
-use App\Services\Service;
+use App\Services\Task\TaskService;
 
-class ShowTask extends Service
+class ShowTask extends TaskService
 {
     public function execute(int $id , User $user)
     {

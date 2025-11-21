@@ -4,12 +4,12 @@ namespace App\Services\Task;
 
 use App\Models\Task;
 use App\Models\User;
-use App\Services\Service;
+use App\Services\Task\TaskService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 
-class ListTasks extends Service
+class ListTasks extends TaskService
 {
 
     public function execute(

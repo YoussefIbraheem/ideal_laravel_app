@@ -3,9 +3,9 @@
 namespace App\Services\Task;
 
 use App\Models\Task;
-use App\Services\Service;
+use App\Services\Task\TaskService;
 
-class UpdateTask extends Service
+class UpdateTask extends TaskService
 {
     public function execute(int $id, array $data)
     {

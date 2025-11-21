@@ -3,9 +3,10 @@
 namespace App\Services\Task;
 
 use App\Models\User;
-use App\Services\Service;
 
-class StoreTask extends Service
+use App\Services\Task\TaskService;
+
+class StoreTask extends TaskService
 {
     public function execute(
         array $data,

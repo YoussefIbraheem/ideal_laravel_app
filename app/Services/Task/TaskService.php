@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Task;
 
 use App\Models\Task;
 use App\Models\User;
 use App\Enums\TaskStatus;
 use App\Enums\UserRole;
 
-class Service
+class TaskService
 {
     protected function limitUserVisibility(User $user, $query)
     {
