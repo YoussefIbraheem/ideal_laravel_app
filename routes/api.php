@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [UserController::class, 'register'])->name('users.register');
 Route::post('/login', [UserController::class, 'login'])->name('users.login');
-
+Route::get('/', function(){
+    return response()->json(['message' => 'Test']);
+});
 // Protected Routes (Require Token)
 Route::middleware('auth:sanctum')->group(function () {
 
